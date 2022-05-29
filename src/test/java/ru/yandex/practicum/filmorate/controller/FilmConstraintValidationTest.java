@@ -16,7 +16,7 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class FilmValidationTest {
+public class FilmConstraintValidationTest {
     private static Validator validator;
 
     private final Film film = new Film();

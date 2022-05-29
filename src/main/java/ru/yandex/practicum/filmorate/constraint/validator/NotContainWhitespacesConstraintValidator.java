@@ -1,14 +1,14 @@
 package ru.yandex.practicum.filmorate.constraint.validator;
 
-import ru.yandex.practicum.filmorate.constraint.NotContainsWhitespaces;
+import ru.yandex.practicum.filmorate.constraint.NotContainWhitespaces;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-public class NotContainsWhitespacesConstraintValidator implements ConstraintValidator<NotContainsWhitespaces, String> {
+public class NotContainWhitespacesConstraintValidator implements ConstraintValidator<NotContainWhitespaces, String> {
 
     @Override
-    public void initialize(NotContainsWhitespaces constraintAnnotation) {
+    public void initialize(NotContainWhitespaces constraintAnnotation) {
         ConstraintValidator.super.initialize(constraintAnnotation);
     }
 

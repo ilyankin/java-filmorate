@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class UserValidationTest {
+public class UserConstraintValidationTest {
     private static Validator validator;
 
     private final User user = new User();

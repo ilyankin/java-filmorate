@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.constraint;
 
-import ru.yandex.practicum.filmorate.constraint.validator.NotContainsWhitespacesConstraintValidator;
+import ru.yandex.practicum.filmorate.constraint.validator.NotContainWhitespacesConstraintValidator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
@@ -13,11 +13,11 @@ import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 @Documented
-@Constraint(validatedBy = {NotContainsWhitespacesConstraintValidator.class})
+@Constraint(validatedBy = {NotContainWhitespacesConstraintValidator.class})
 @Target({FIELD, PARAMETER})
 @Retention(RUNTIME)
-public @interface NotContainsWhitespaces {
-    String message() default "{ru.yandex.practicum.filmorate.constraint.NotContainsWhitespaces.message}";
+public @interface NotContainWhitespaces {
+    String message() default "{ru.yandex.practicum.filmorate.constraint.NotContainWhitespaces.message}";
 
     Class<?>[] groups() default {};
 
