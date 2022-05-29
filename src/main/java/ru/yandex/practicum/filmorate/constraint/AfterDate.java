@@ -23,5 +23,7 @@ public @interface AfterDate {
 
     Class<? extends Payload>[] payload() default {};
 
-    String value();
+    String date();
+
+    String datePattern() default "dd.MM.yyyy";
 }

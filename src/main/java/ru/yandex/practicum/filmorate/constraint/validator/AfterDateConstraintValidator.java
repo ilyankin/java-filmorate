@@ -13,13 +13,13 @@ public class AfterDateConstraintValidator implements ConstraintValidator<AfterDa
 
     @Override
     public void initialize(AfterDate constraintAnnotation) {
-        String value = constraintAnnotation.value();
-        date = LocalDate.parse(value, DateTimeFormatter.BASIC_ISO_DATE);
+        String value = constraintAnnotation.date();
+        date = LocalDate.parse(value, DateTimeFormatter.ofPattern(constraintAnnotation.datePattern()));
     }
 
     @Override
-    public boolean isValid(LocalDate value, ConstraintValidatorContext context) {
-        if (value == null) return true;
-        return date.isBefore(value);
+    public boolean isValid(LocalDate date, ConstraintValidatorContext context) {
+        if (date == null) return true;
+        return this.date.isBefore(date);
     }
 }
