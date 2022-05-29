@@ -12,7 +12,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    private long id = 0;
+    private long id;
     private final Map<Long, User> userMap = new HashMap<>();
 
     @PostMapping
