@@ -19,7 +19,7 @@ public class AfterDateConstraintValidator implements ConstraintValidator<AfterDa
 
     @Override
     public boolean isValid(LocalDate date, ConstraintValidatorContext context) {
-        if (date == null) return true;
+        if (date == null) return true; // true so that there's null value support for LocalDate instance
         return this.date.isBefore(date);
     }
 }
