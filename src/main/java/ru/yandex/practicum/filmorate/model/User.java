@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.*;
 import ru.yandex.practicum.filmorate.constraint.NotContainWhitespaces;
 
@@ -7,6 +8,8 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Past;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -26,4 +29,6 @@ public class User {
     private String name;
     @Past(message = "User birthday cannot be in the future")
     private LocalDate birthday;
+    @JsonDeserialize(as = HashSet.class)
+    private Set<Long> friendsId;
 }

@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 import ru.yandex.practicum.filmorate.constraint.AfterDate;
@@ -7,6 +8,8 @@ import ru.yandex.practicum.filmorate.constraint.AfterDate;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 
 @Getter
@@ -25,4 +28,6 @@ public class Film {
     private LocalDate releaseDate;
     @Positive(message = "Film duration should be positive")
     private int duration;
+    @JsonDeserialize(as = HashSet.class)
+    private Set<Long> likedIdsUsers;
 }

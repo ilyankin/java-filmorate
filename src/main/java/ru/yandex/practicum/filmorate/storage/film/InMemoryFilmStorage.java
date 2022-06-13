@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage;
+package ru.yandex.practicum.filmorate.storage.film;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -57,6 +57,19 @@ public class InMemoryFilmStorage implements FilmStorage<Film> {
     @GetMapping
     public Collection<Film> getAll() {
         return filmMap.values();
+    }
+
+
+    @Override
+    public void addLike(Long userId, Long filmId) {
+        Film film = find(filmId);
+        film.getLikedIdsUsers().add(userId);
+    }
+
+    @Override
+    public void removeLike(Long userId, Long filmId) {
+        Film film = find(filmId);
+        film.getLikedIdsUsers().remove(userId);
     }
 
     private long generateId() {
