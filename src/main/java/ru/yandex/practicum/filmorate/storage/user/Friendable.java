@@ -7,11 +7,5 @@ public interface Friendable<IdType> {
 
     void addFriend(IdType id, IdType friendId);
 
-    void addFriends(IdType id, IdType... friendId);
-
     void deleteFriend(IdType id, IdType friendId);
-
-    void deleteFriends(IdType id, IdType... friendId);
-
-    void deleteAllFriends(IdType id);
 }

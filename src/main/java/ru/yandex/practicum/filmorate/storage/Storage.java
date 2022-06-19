@@ -1,17 +1,19 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import ru.yandex.practicum.filmorate.model.BaseEntity;
+
 import java.util.Collection;
 
-public interface Storage<T> {
-    T find(long id);
+public interface Storage<EntityType extends BaseEntity<idType>, idType> {
+    EntityType find(idType id);
 
-    Collection<T> findAll();
+    Collection<EntityType> findAll();
 
-    T create(T value);
+    EntityType create(EntityType value);
 
-    T update(T value);
+    EntityType update(EntityType value);
 
-    T delete(long id);
+    EntityType delete(idType id);
 
     void deleteAll();
 }

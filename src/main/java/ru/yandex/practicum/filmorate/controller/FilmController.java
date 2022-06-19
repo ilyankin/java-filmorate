@@ -5,8 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
-import ru.yandex.practicum.filmorate.storage.Storage;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
 import java.util.Collection;
@@ -15,25 +14,47 @@ import java.util.Collection;
 @RequestMapping("/films")
 @Slf4j
 public class FilmController {
-    private final Storage<Film> filmStorage;
+
+    private final FilmService filmService;
 
     @Autowired
-    public FilmController(InMemoryFilmStorage filmStorage) {
-        this.filmStorage = filmStorage;
+    public FilmController(FilmService filmService) {
+        this.filmService = filmService;
+    }
+
+    @GetMapping("/{id}")
+    public Film find(@PathVariable Long id) {
+        return filmService.find(id);
+    }
+
+    @GetMapping
+    public Collection<Film> findAll() {
+        return filmService.findAll();
     }
 
     @PostMapping
     public Film create(@Valid @RequestBody Film film) {
-        return filmStorage.create(film);
+        return filmService.create(film);
     }
 
     @PutMapping
     public Film update(@Valid @RequestBody Film film) {
-        return filmStorage.update(film);
+        return filmService.update(film);
     }
 
-    @GetMapping
-    public Collection<Film> getAll() {
-        return filmStorage.findAll();
+    @PutMapping("/{id}/like/{userId}")
+    public void addLike(@PathVariable Long id, @PathVariable Long userId) {
+        filmService.addLike(userId, id);
     }
+
+    @DeleteMapping("/{id}/like/{userId}")
+    public void removeLike(@PathVariable Long id, @PathVariable Long userId) {
+        filmService.removeLike(userId, id);
+    }
+
+    @GetMapping("/popular")
+    public Collection<Film> getPopular(@RequestParam(required = false) Integer count) {
+        return count == null ? filmService.getPopular(10) : filmService.getPopular(count);
+    }
+
 }

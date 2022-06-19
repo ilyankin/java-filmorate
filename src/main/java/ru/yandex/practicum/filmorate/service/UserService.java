@@ -5,81 +5,59 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.Collection;
-import java.util.Set;
+import java.util.HashSet;
+import java.util.stream.Collectors;
 
-@Slf4j
 @Service
-public class UserService {
-
-    private final UserStorage<User> userStorage;
+@Slf4j
+public class UserService extends AbstractService<User, InMemoryUserStorage> {
 
     @Autowired
-    public UserService(UserStorage<User> userStorage) {
-        this.userStorage = userStorage;
+    public UserService(InMemoryUserStorage userStorage) {
+        super(userStorage);
     }
 
-    public User find(long id) {
-        return userStorage.find(id);
-    }
-
-    public Collection<User> findAll() {
-        return userStorage.findAll();
-    }
-
+    @Override
     public User create(User user) {
         setNameToLoginIfNameIsEmpty(user);
-        return userStorage.create(user);
+        return super.create(user);
     }
 
+    @Override
     public User update(User user) {
         setNameToLoginIfNameIsEmpty(user);
-        return userStorage.update(user);
-    }
-
-    public User delete(long id) {
-        return userStorage.delete(id);
-    }
-
-    public void deleteAll() {
-        userStorage.deleteAll();
+        return super.update(user);
     }
 
     public Collection<Long> getIdsFriends(Long id) {
-        return userStorage.getIdsFriends(id);
+        return storage.getIdsFriends(id);
+    }
+
+    public Collection<User> getFriends(Long id) {
+        return storage.getIdsFriends(id).stream().map(this::find).collect(Collectors.toUnmodifiableList());
     }
 
     public void addFriend(Long id, Long friendId) {
-        userStorage.addFriend(id, friendId);
-    }
-
-    public void addFriends(Long id, Long... friendIds) {
-        userStorage.addFriends(id, friendIds);
+        storage.addFriend(id, friendId);
     }
 
     public void deleteFriend(Long id, Long friendId) {
-        userStorage.deleteFriend(id, friendId);
+        storage.deleteFriend(id, friendId);
     }
 
-    public void deleteFriends(Long id, Long... friendIds) {
-        userStorage.deleteFriends(id, friendIds);
-    }
-
-    public void deleteAllFriends(Long id) {
-        userStorage.deleteFriends(id);
-    }
-
-    public Collection<Long> getMutualFriends(Long id1, Long id2) {
-        Collection<Long> friends = getIdsFriends(id1);
-        friends.retainAll(getIdsFriends(id2));
-        return friends;
+    public Collection<User> getCommonFriends(Long id, Long otherId) {
+        // using the HashSet wrapper in order not to modify user's set of friends
+        Collection<Long> friends = new HashSet<>(getIdsFriends(id));
+        friends.retainAll(getIdsFriends(otherId));
+        return friends.stream().map(this::find).collect(Collectors.toUnmodifiableList());
     }
 
     private void setNameToLoginIfNameIsEmpty(User user) {
         String name = user.getName();
         if (name == null || name.isBlank()) user.setName(user.getLogin());
+        log.info("The empty username was automatically replaced with his login=\"{}\"", user.getLogin());
     }
 
 }

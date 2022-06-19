@@ -1,7 +1,9 @@
 package ru.yandex.practicum.filmorate.model;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 import ru.yandex.practicum.filmorate.constraint.AfterDate;
 
@@ -16,10 +18,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Film {
-    @EqualsAndHashCode.Include
-    private long id;
+public class Film extends BaseEntity<Long> {
     @NotBlank(message = "Film name cannot be empty")
     private String name;
     @Length(message = "Film description length should be < 200 characters", max = 200)
@@ -28,6 +27,21 @@ public class Film {
     private LocalDate releaseDate;
     @Positive(message = "Film duration should be positive")
     private int duration;
-    @JsonDeserialize(as = HashSet.class)
-    private Set<Long> likedIdsUsers;
+    private Set<Long> likedIdsUsers = new HashSet<>();
+
+    public int getCountLikes() {
+        return likedIdsUsers.size();
+    }
+
+    @Override
+    public String toString() {
+        return "Film{" +
+                ", id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", releaseDate=" + releaseDate +
+                ", duration=" + duration +
+                ", likedIdsUsers=" + likedIdsUsers +
+                '}';
+    }
 }
