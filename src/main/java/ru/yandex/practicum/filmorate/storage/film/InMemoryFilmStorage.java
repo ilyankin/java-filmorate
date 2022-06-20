@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 @Component
 @Slf4j
-public class InMemoryFilmStorage extends AbstractStorage<Film, Long> implements Likable<Long, Long> {
+public class InMemoryFilmStorage extends AbstractStorage<Film, Long> implements Likeable<Long, Long> {
     private Long id = 0L;
 
     @Override

@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-class ValidationResponseError extends SubResponseError {
+class ValidationResponseError extends BindingResponseError {
     private String object;
     private String field;
     private Object rejectedValue;

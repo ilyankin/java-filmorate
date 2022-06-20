@@ -1,9 +1,7 @@
 package ru.yandex.practicum.filmorate.controller.handler;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Setter;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
@@ -24,7 +22,7 @@ public class ErrorResponse {
     private final String error;
 
     private String message = "Unexpected internal error";
-    private List<SubResponseError> subErrors;
+    private List<BindingResponseError> bindingErrors;
 
     public ErrorResponse(HttpStatus httpStatus) {
         this.httpStatus =httpStatus;
@@ -32,11 +30,11 @@ public class ErrorResponse {
         this.error = httpStatus.getReasonPhrase();
     }
 
-    private void addSubResponseError(SubResponseError subResponseError) {
-        if (subErrors == null) {
-            subErrors = new ArrayList<>();
+    private void addSubResponseError(BindingResponseError bindingResponseError) {
+        if (bindingErrors == null) {
+            bindingErrors = new ArrayList<>();
         }
-        subErrors.add(subResponseError);
+        bindingErrors.add(bindingResponseError);
     }
 
     private void addValidationError(String object, String field, Object rejectedValue, String message) {
