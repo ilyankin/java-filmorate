@@ -52,10 +52,10 @@ public class FilmController {
         filmService.removeLike(userId, id);
     }
 
+    private static final int DEFAULT_NUMBER_TOP_FILMS_BY_LIKES = 10;
     @GetMapping("/popular")
     public Collection<Film> getPopular(@RequestParam(required = false) Integer count) {
-        int defaultNumberTopFilmsByLikes = 10;
-        return count == null ? filmService.getPopular(defaultNumberTopFilmsByLikes) : filmService.getPopular(count);
+        return count == null ? filmService.getPopular(DEFAULT_NUMBER_TOP_FILMS_BY_LIKES) : filmService.getPopular(count);
     }
 
 }
