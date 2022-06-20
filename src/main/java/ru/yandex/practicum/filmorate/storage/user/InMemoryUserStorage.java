@@ -2,6 +2,8 @@ package ru.yandex.practicum.filmorate.storage.user;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.UserEmailAlreadyTakenException;
+import ru.yandex.practicum.filmorate.exception.UserLoginAlreadyTakenException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.AbstractStorage;
 
@@ -14,8 +16,21 @@ public class InMemoryUserStorage extends AbstractStorage<User, Long> implements 
 
     @Override
     public User create(User user) {
+        checkEmailAndLoginAvailability(user);
         user.setId(generateId());
         return super.create(user);
+    }
+
+    @Override
+    public User update(User user) {
+        User oldUser = find(user.getId());
+        if (!oldUser.getEmail().equals(user.getEmail())) {
+            checkEmailAvailability(user);
+        }
+        if (!oldUser.getLogin().equals(user.getLogin())) {
+            checkLoginAvailability(user);
+        }
+        return super.update(user);
     }
 
     @Override
@@ -43,5 +58,30 @@ public class InMemoryUserStorage extends AbstractStorage<User, Long> implements 
 
     private long generateId() {
         return ++id;
+    }
+
+
+    private void checkEmailAndLoginAvailability(User newUser) {
+        checkEmailAvailability(newUser);
+        checkLoginAvailability(newUser);
+    }
+    private void checkEmailAvailability(User newUser) {
+        String email = newUser.getEmail();
+        for (User user : dataMap.values()) {
+            if (email.equals(user.getEmail())) {
+                log.warn("This user ({}) email {} is already taken", newUser, newUser.getEmail());
+                throw new UserEmailAlreadyTakenException(email);
+            }
+        }
+    }
+
+    private void checkLoginAvailability(User newUser) {
+        String login = newUser.getLogin();
+        for (User user : dataMap.values()) {
+            if (login.equals(user.getLogin())) {
+                log.warn("This user ({}) login {} is already taken", newUser, newUser.getLogin());
+                throw new UserLoginAlreadyTakenException(login);
+            }
+        }
     }
 }

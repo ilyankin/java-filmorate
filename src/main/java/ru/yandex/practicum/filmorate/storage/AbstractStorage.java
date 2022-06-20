@@ -14,7 +14,7 @@ import java.util.Map;
 public abstract class AbstractStorage<EntityType extends BaseEntity<IdType>, IdType> implements Storage<EntityType, IdType> {
     @SuppressWarnings("unchecked")
     protected final String entityTypeClassName = ((Class<EntityType>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0]).getSimpleName();
-    private final Map<IdType, EntityType> dataMap = new HashMap<>();
+    protected final Map<IdType, EntityType> dataMap = new HashMap<>();
 
     @Override
     public EntityType find(IdType entityId) {
