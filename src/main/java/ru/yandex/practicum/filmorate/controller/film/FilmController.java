@@ -1,11 +1,13 @@
-package ru.yandex.practicum.filmorate.controller;
+package ru.yandex.practicum.filmorate.controller.film;
 
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.model.Like;
+import ru.yandex.practicum.filmorate.service.film.FilmService;
+import ru.yandex.practicum.filmorate.service.like.LikeService;
 
 import javax.validation.Valid;
 import java.util.Collection;
@@ -14,12 +16,13 @@ import java.util.Collection;
 @RequestMapping("/films")
 @Slf4j
 public class FilmController {
-
     private final FilmService filmService;
+    private final LikeService likeService;
 
     @Autowired
-    public FilmController(FilmService filmService) {
+    public FilmController(FilmService filmService, LikeService likeService) {
         this.filmService = filmService;
+        this.likeService = likeService;
     }
 
     @GetMapping("/{id}")
@@ -43,19 +46,20 @@ public class FilmController {
     }
 
     @PutMapping("/{id}/like/{userId}")
-    public void addLike(@PathVariable Long id, @PathVariable Long userId) {
-        filmService.addLike(userId, id);
+    public void addLike(@PathVariable("id") Long filmId, @PathVariable Long userId) {
+        likeService.save(new Like(userId, filmId));
     }
 
     @DeleteMapping("/{id}/like/{userId}")
-    public void removeLike(@PathVariable Long id, @PathVariable Long userId) {
-        filmService.removeLike(userId, id);
+    public void removeLike(@PathVariable("id") Long filmId, @PathVariable Long userId) {
+        likeService.delete(new Like(userId, filmId));
     }
 
     private static final int DEFAULT_NUMBER_TOP_FILMS_BY_LIKES = 10;
+
     @GetMapping("/popular")
     public Collection<Film> getPopular(@RequestParam(required = false) Integer count) {
-        return count == null ? filmService.getPopular(DEFAULT_NUMBER_TOP_FILMS_BY_LIKES) : filmService.getPopular(count);
+        return count == null ? filmService.findTopFilmsByLikes(DEFAULT_NUMBER_TOP_FILMS_BY_LIKES) : filmService.findTopFilmsByLikes(count);
     }
 
 }

@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -8,16 +7,18 @@ import org.hibernate.validator.constraints.Length;
 import ru.yandex.practicum.filmorate.constraint.AfterDate;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
+import java.sql.Date;
 import java.time.LocalDate;
-import java.util.HashSet;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
-
 
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class Film extends BaseEntity<Long> {
     @NotBlank(message = "Film name cannot be empty")
     private String name;
@@ -27,10 +28,34 @@ public class Film extends BaseEntity<Long> {
     private LocalDate releaseDate;
     @Positive(message = "Film duration should be positive")
     private int duration;
-    private Set<Long> likedIdsUsers = new HashSet<>();
+    private int rate;
+    @NotNull(message = "Mpa cannot be null")
+    private MpaRating mpa;
 
-    public int getCountLikes() {
-        return likedIdsUsers.size();
+    private Set<Genre> genres;
+
+    public Film(Long id, String name, String description, LocalDate releaseDate, int duration, int rate,
+                MpaRating mpa, Set<Genre> genres) {
+        super(id);
+        this.name = name;
+        this.description = description;
+        this.releaseDate = releaseDate;
+        this.duration = duration;
+        this.rate = rate;
+        this.mpa = mpa;
+        this.genres = genres;
+    }
+
+    public Film(Long id, String name, String description, LocalDate releaseDate, int duration, int rate,
+                MpaRating mpa) {
+        super(id);
+        this.name = name;
+        this.description = description;
+        this.releaseDate = releaseDate;
+        this.duration = duration;
+        this.rate = rate;
+        this.mpa = mpa;
+        this.genres = Collections.emptySet();
     }
 
     @Override
@@ -41,7 +66,22 @@ public class Film extends BaseEntity<Long> {
                 ", description='" + description + '\'' +
                 ", releaseDate=" + releaseDate +
                 ", duration=" + duration +
-                ", likedIdsUsers=" + likedIdsUsers +
+                ", rate=" + rate +
+                ", mpa=" + mpa +
+                ", genres=" + genres +
                 '}';
+    }
+
+    @Override
+    public Map<String, Object> toMap() {
+        return new HashMap<>() {{
+            put("id", id);
+            put("name", name);
+            put("description", description);
+            put("release_date", releaseDate == null ? null : Date.valueOf(releaseDate));
+            put("duration", duration);
+            put("rate", rate);
+            put("mpa", mpa.getName());
+        }};
     }
 }
