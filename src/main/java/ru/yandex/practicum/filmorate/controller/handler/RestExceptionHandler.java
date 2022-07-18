@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.controller.handler;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
@@ -14,7 +13,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @ControllerAdvice
-@Slf4j
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Override
