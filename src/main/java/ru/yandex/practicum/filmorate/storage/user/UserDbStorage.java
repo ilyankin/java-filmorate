@@ -10,7 +10,6 @@ import ru.yandex.practicum.filmorate.storage.Storage;
 import ru.yandex.practicum.filmorate.storage.rowmaper.UserRowMapper;
 import ru.yandex.practicum.filmorate.util.DbUtil;
 
-import java.sql.Date;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -18,6 +17,16 @@ import java.util.Optional;
 public class UserDbStorage implements Storage<User, Long> {
     private final static String USERS = "USERS";
     private final static String USER_ID = "id";
+    private final static String USER_UPDATE_SQL_QUERY = "UPDATE USERS SET email = ?, login = ?, name = ?, birthday = ? WHERE id = ?";
+    private final static String USER_SELECT_FRIENDS_SQL_QUERY = "SELECT * FROM " + USERS + " WHERE id IN ("
+            + "(SELECT user_id FROM FRIENDSHIPS WHERE friend_id = ? AND confirmed IS TRUE)"
+            + " UNION (SELECT friend_id FROM FRIENDSHIPS WHERE user_id = ?))";
+    private final static String USER_SELECT_COMMON_FRIENDS_SQL_QUERY = "SELECT * FROM " + USERS + " WHERE id IN ("
+            + "(SELECT user_id FROM FRIENDSHIPS WHERE friend_id = ? AND confirmed IS TRUE) "
+            + "UNION (SELECT friend_id FROM FRIENDSHIPS WHERE user_id = ?)) "
+            + "AND id IN ((SELECT user_id FROM FRIENDSHIPS WHERE friend_id = ? AND confirmed IS TRUE) "
+            + "UNION (SELECT friend_id FROM FRIENDSHIPS WHERE user_id = ?))";
+
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
@@ -63,41 +72,25 @@ public class UserDbStorage implements Storage<User, Long> {
         Optional<User> oldUser = findById(user.getId());
         if (oldUser.isEmpty()) return Optional.empty();
 
-        String updateSqlQuery = "UPDATE " + USERS + " SET " +
-                "email = ?, login = ?, name = ?, birthday = ?" +
-                " WHERE " + USER_ID + " = ?";
-        jdbcTemplate.update(updateSqlQuery,
+        jdbcTemplate.update(USER_UPDATE_SQL_QUERY,
                 user.getEmail(),
                 user.getLogin(),
                 user.getName(),
-                Date.valueOf(user.getBirthday()),
+                user.getBirthday(),
                 user.getId());
         return Optional.of(user);
     }
 
     @Override
     public boolean delete(Long id) {
-        String deleteSqlQuery = "DELETE FROM " + USERS + " WHERE " + USER_ID + " = ?";
-        return jdbcTemplate.update(deleteSqlQuery, id) == 1;
+        return DbUtil.delete(jdbcTemplate, USERS, USER_ID, id);
     }
 
     public Collection<User> getUserFriends(Long userId) {
-        String selectSqlQuery = "SELECT * FROM " + USERS + " WHERE id IN ("
-                + "(SELECT user_id FROM FRIENDSHIPS WHERE friend_id = ? AND confirmed IS TRUE)"
-                + " UNION "
-                + "(SELECT friend_id FROM FRIENDSHIPS WHERE user_id = ?))";
-        return jdbcTemplate.query(selectSqlQuery, userRowMapper, userId, userId);
+        return jdbcTemplate.query(USER_SELECT_FRIENDS_SQL_QUERY, userRowMapper, userId, userId);
     }
 
     public Collection<User> getCommonUserFriends(Long userId, Long otherUserId) {
-        String selectSqlQuery = "SELECT * FROM " + USERS + " WHERE id IN ("
-                + "(SELECT user_id FROM FRIENDSHIPS WHERE friend_id = ? AND confirmed IS TRUE)"
-                + " UNION "
-                + "(SELECT friend_id FROM FRIENDSHIPS WHERE user_id = ?))"
-                + " AND id IN ("
-                + "(SELECT user_id FROM FRIENDSHIPS WHERE friend_id = ? AND confirmed IS TRUE)"
-                + " UNION "
-                + "(SELECT friend_id FROM FRIENDSHIPS WHERE user_id = ?))";
-        return jdbcTemplate.query(selectSqlQuery, userRowMapper, userId, userId, otherUserId, otherUserId);
+        return jdbcTemplate.query(USER_SELECT_COMMON_FRIENDS_SQL_QUERY, userRowMapper, userId, userId, otherUserId, otherUserId);
     }
 }

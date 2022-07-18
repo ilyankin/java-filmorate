@@ -18,6 +18,8 @@ import java.util.Optional;
 public class GenreDbStorage implements Storage<Genre, Integer> {
     private final static String GENRES = "GENRES";
     private final static String GENRE_ID = "id";
+    private final static String GENRE_UPDATE_SQL_QUERY =
+            "UPDATE GENRES SET id = ?, name = ? WHERE id = ?";
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
@@ -43,7 +45,6 @@ public class GenreDbStorage implements Storage<Genre, Integer> {
 
     @Override
     public Integer save(Genre genre) {
-
         return (Integer) DbUtil.save(simpleJdbcInsert, genre);
     }
 
@@ -52,10 +53,7 @@ public class GenreDbStorage implements Storage<Genre, Integer> {
         Objects.requireNonNull(genre, "genre must not be null");
         Optional<Genre> oldGenre = findById(genre.getId());
         if (oldGenre.isEmpty()) return Optional.empty();
-
-        String updateSqlQuery = "UPDATE + " + GENRES + " SET " +
-                " id = ?, name = ?" + " WHERE " + GENRE_ID + " = ?";
-        jdbcTemplate.update(updateSqlQuery, genre.toMap());
+        jdbcTemplate.update(GENRE_UPDATE_SQL_QUERY, genre.toMap());
         return Optional.of(genre);
     }
 

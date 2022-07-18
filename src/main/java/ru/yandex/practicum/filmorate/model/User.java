@@ -8,7 +8,6 @@ import ru.yandex.practicum.filmorate.constraint.NotContainWhitespaces;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Past;
-import java.sql.Date;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
@@ -42,7 +41,7 @@ public class User extends BaseEntity<Long> {
             put("email", email);
             put("login", login);
             put("name", name);
-            put("birthday", birthday == null ? null : Date.valueOf(birthday));
+            put("birthday", birthday);
         }};
     }
 

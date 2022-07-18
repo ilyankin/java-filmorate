@@ -19,6 +19,13 @@ public class FilmDbStorage implements Storage<Film, Long> {
     private final static String FILMS = "FILMS";
     private final static String FILM_ID = "id";
 
+    private final static String SELECT_TOP_N_FILM_BY_LIKES_SQL_QUERY =
+            "SELECT * FROM FILMS AS f LEFT JOIN FILM_LIKES AS fl on f.id = fl.film_id GROUP BY f.id"
+                    + " ORDER BY COUNT(DISTINCT fl.user_id) DESC LIMIT ?";
+
+    private final static String FILM_UPDATE_SQL_QUERY = "UPDATE FILMS SET"
+            + " name = ?, description = ?, release_date = ?, duration = ?, rate = ?, mpa = ? WHERE id = ?";
+
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
     private final RowMapper<Film> filmRowMapper;
@@ -42,12 +49,7 @@ public class FilmDbStorage implements Storage<Film, Long> {
     }
 
     public Collection<Film> findTopFilmsByLikes(int count) {
-        String sql = "SELECT * FROM " + FILMS + " AS f"
-                + " LEFT JOIN FILM_LIKES AS fl on f.id = fl.film_id"
-                + " GROUP BY f.id"
-                + " ORDER BY COUNT(DISTINCT fl.user_id) DESC"
-                + " LIMIT ?";
-        return jdbcTemplate.query(sql, filmRowMapper, count);
+        return jdbcTemplate.query(SELECT_TOP_N_FILM_BY_LIKES_SQL_QUERY, filmRowMapper, count);
     }
 
     @Override
@@ -61,11 +63,7 @@ public class FilmDbStorage implements Storage<Film, Long> {
         Objects.requireNonNull(film, "user must not be null");
         Optional<Film> oldFilm = findById(film.getId());
         if (oldFilm.isEmpty()) return Optional.empty();
-
-        String updateSqlQuery = "UPDATE " + FILMS + " SET" +
-                " name = ?, description = ?, release_date = ?, duration = ?, rate = ?, mpa = ?" +
-                " WHERE " + FILM_ID + " = ?";
-        jdbcTemplate.update(updateSqlQuery,
+        jdbcTemplate.update(FILM_UPDATE_SQL_QUERY,
                 film.getName(),
                 film.getDescription(),
                 film.getReleaseDate(),
@@ -80,5 +78,4 @@ public class FilmDbStorage implements Storage<Film, Long> {
     public boolean delete(Long id) {
         return DbUtil.delete(jdbcTemplate, FILMS, FILM_ID, id);
     }
-
 }

@@ -16,27 +16,24 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public final class DbUtil {
+    private static final String SELECT_ALL_FROM = "SELECT * FROM ";
+    private static final String DELETE_FROM = "DELETE FROM ";
+    private static final String WHERE = " WHERE ";
+    private static final String UNDEFINED_PARAMETER = " = ?";
 
     private DbUtil() {
     }
+
+    private final static String ID = "id";
 
     public static <T, K> Optional<T> find(JdbcTemplate jdbcTemplate,
                                           RowMapper<T> rowMapper,
                                           String tableName,
                                           String fieldName,
                                           K value) {
-        String selectSqlQuery = "SELECT * FROM " + tableName + " WHERE " + fieldName + " = ?";
+        String selectSqlQuery = SELECT_ALL_FROM + tableName + WHERE + fieldName + UNDEFINED_PARAMETER;
         try (Stream<T> stream = jdbcTemplate.queryForStream(selectSqlQuery, rowMapper, value)) {
             return stream.findAny();
-        }
-    }
-
-    public static <T> Collection<T> findAll(JdbcTemplate jdbcTemplate,
-                                            RowMapper<T> rowMapper,
-                                            String tableName) {
-        String selectSqlQuery = "SELECT * FROM " + tableName;
-        try (Stream<T> stream = jdbcTemplate.queryForStream(selectSqlQuery, rowMapper)) {
-            return stream.collect(Collectors.toList());
         }
     }
 
@@ -44,19 +41,28 @@ public final class DbUtil {
         return simpleJdbcInsert.executeAndReturnKey(value.toMap());
     }
 
+    public static <T> Collection<T> findAll(JdbcTemplate jdbcTemplate,
+                                            RowMapper<T> rowMapper,
+                                            String tableName) {
+        String selectSqlQuery = SELECT_ALL_FROM + tableName;
+        try (Stream<T> stream = jdbcTemplate.queryForStream(selectSqlQuery, rowMapper)) {
+            return stream.collect(Collectors.toList());
+        }
+    }
+
     public static <K> boolean delete(JdbcTemplate jdbcTemplate,
                                      String tableName,
                                      String fieldName,
                                      K value) {
-        return jdbcTemplate.update("DELETE FROM " + tableName + " WHERE " + fieldName + " = ?", value) == 1;
+        return jdbcTemplate.update(DELETE_FROM + tableName + WHERE + fieldName + UNDEFINED_PARAMETER, value) == 1;
     }
 
     public static void checkUsersExist(UserDbStorage storage, Long... userIds) {
-        checkEntityExists(storage, "user", "id", userIds);
+        checkEntityExists(storage, "user", ID, userIds);
     }
 
     public static void checkFilmsExist(FilmDbStorage storage, Long... filmIds) {
-        checkEntityExists(storage, "film", "id", filmIds);
+        checkEntityExists(storage, "film", ID, filmIds);
     }
 
     @SafeVarargs

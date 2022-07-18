@@ -18,9 +18,17 @@ import java.util.stream.Stream;
 
 @Repository
 public class FilmGenreDbStorage implements IntersectStorage<FilmGenre, Long> {
-    private final static String FILM_GENRES = "FILM_GENRES";
-    private final static String FILM_ID = "film_id";
-    private final static String GENRE_ID = "genre_id";
+
+    private final static String FILM_GENRES_SELECT_SQL_QUERY =
+            "SELECT * FROM FILM_GENRES WHERE (film_id = ? AND genre_id = ?)";
+    private final static String FILM_GENRES_INTO_SQL_QUERY =
+            "MERGE INTO FILM_GENRES (film_id, genre_id) KEY (film_id, genre_id) VALUES (?, ?)";
+    private final static String FILM_GENRES_DELETE_SQL_QUERY =
+            "DELETE FROM FILM_GENRES WHERE (film_id = ? AND genre_id = ?)";
+    private final static String FILM_GENRES_DELETE_BY_FILM_ID_SQL_QUERY = "DELETE FROM FILM_GENRES WHERE film_id = ?";
+    private final static String FILM_GENRES_SELECT_GENRES_BY_FILM_SQL_QUERY =
+            "SELECT fg.genre_id AS id, name FROM FILM_GENRES AS fg"
+                    + " JOIN GENRES AS g ON fg.genre_id = g.id AND fg.film_id = ? ORDER BY genre_id";
 
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<FilmGenre> filmGenreRowMapper;
@@ -35,9 +43,8 @@ public class FilmGenreDbStorage implements IntersectStorage<FilmGenre, Long> {
 
     @Override
     public Optional<FilmGenre> find(Long film_id, Long genre_id) {
-        String selectSqlQuery = "SELECT * FROM " + FILM_GENRES
-                + " WHERE (" + FILM_ID + " = ? " + " AND " + GENRE_ID + " = ?)";
-        try (Stream<FilmGenre> stream = jdbcTemplate.queryForStream(selectSqlQuery, filmGenreRowMapper, film_id, genre_id)) {
+        try (Stream<FilmGenre> stream = jdbcTemplate.queryForStream(FILM_GENRES_SELECT_SQL_QUERY, filmGenreRowMapper,
+                film_id, genre_id)) {
             return stream.findAny();
         }
     }
@@ -45,29 +52,22 @@ public class FilmGenreDbStorage implements IntersectStorage<FilmGenre, Long> {
     @Override
     public void save(FilmGenre fg) {
         Objects.requireNonNull(fg, "fg must not be null");
-        String intoSqlQuery = "MERGE INTO " + FILM_GENRES + " (" + FILM_ID
-                + ", " + GENRE_ID + ") "
-                + "KEY (" + FILM_ID + ", " + GENRE_ID + ") VALUES (?, ?)";
-        jdbcTemplate.update(intoSqlQuery, fg.getFilmId(), fg.getGenreId());
+        jdbcTemplate.update(FILM_GENRES_INTO_SQL_QUERY, fg.getFilmId(), fg.getGenreId());
     }
 
     @Override
     public boolean delete(FilmGenre fg) {
         Objects.requireNonNull(fg, "fg must not be null");
-        String deleteSqlQuery = "DELETE FROM " + FILM_GENRES + " WHERE "
-                + FILM_ID + " = ? " + " AND " + GENRE_ID + " = ?";
-        return jdbcTemplate.update(deleteSqlQuery, fg.getFilmId(), fg.getGenreId()) == 1;
+        return jdbcTemplate.update(FILM_GENRES_DELETE_SQL_QUERY, fg.getFilmId(), fg.getGenreId()) == 1;
     }
 
     public boolean deleteByFilmId(Long filmId) {
-        String deleteSqlQuery = "DELETE FROM " + FILM_GENRES + " WHERE " + FILM_ID + " = ?";
-        return jdbcTemplate.update(deleteSqlQuery, filmId) > 0;
+        return jdbcTemplate.update(FILM_GENRES_DELETE_BY_FILM_ID_SQL_QUERY, filmId) > 0;
     }
 
     public Set<Genre> findFilmGenres(Long filmId) {
-        String selectSqlQuery = "SELECT fg." + GENRE_ID + " AS id, name FROM " + FILM_GENRES + " AS fg" +
-                " JOIN GENRES AS g ON fg." + GENRE_ID + " = g.id AND fg." + FILM_ID + " = ?" +
-                " ORDER BY " + GENRE_ID;
-        return new LinkedHashSet<>(jdbcTemplate.query(selectSqlQuery, genreRowMapper, filmId));
+        return new LinkedHashSet<>(
+                jdbcTemplate.query(FILM_GENRES_SELECT_GENRES_BY_FILM_SQL_QUERY, genreRowMapper, filmId)
+        );
     }
 }

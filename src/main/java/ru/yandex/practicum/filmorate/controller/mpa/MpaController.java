@@ -1,23 +1,30 @@
 package ru.yandex.practicum.filmorate.controller.mpa;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.yandex.practicum.filmorate.exception.ResourceNotFoundException;
 import ru.yandex.practicum.filmorate.model.MpaRating;
+import ru.yandex.practicum.filmorate.service.mpa.MpaService;
 
 @RestController
 @RequestMapping("/mpa")
 public class MpaController {
+    private final MpaService mpaService;
+
+    @Autowired
+    public MpaController(MpaService mpaService) {
+        this.mpaService = mpaService;
+    }
+
     @GetMapping("/{id}")
     public MpaRating find(@PathVariable Integer id) {
-        if (MpaRating.values().length < id || id < 1) throw new ResourceNotFoundException("MPA", "id", id);
-        return MpaRating.forValue(id);
+        return mpaService.find(id);
     }
 
     @GetMapping
     public MpaRating[] findAll() {
-        return MpaRating.values();
+        return mpaService.findAll();
     }
 }

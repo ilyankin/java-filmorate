@@ -17,7 +17,12 @@ public class LikeDbStorage implements IntersectStorage<Like, Long> {
     private final static String FILM_LIKES = "FILM_LIKES";
     private final static String USER_ID = "user_id";
     private final static String FILM_ID = "film_id";
-
+    private final static String LIKE_SELECT_SQL_QUERY =
+            "SELECT * FROM FILM_LIKES WHERE user_id = ? AND film_id = ?";
+    private final static String LIKE_INSERT_SQL_QUERY =
+            "MERGE INTO FILM_LIKES (film_id, user_id) KEY (film_id, user_id) VALUES (?, ?)";
+    private final static String LIKE_DELETE_SQL_QUERY =
+            "DELETE FROM FILM_LIKES WHERE film_id = ? AND user_id = ?";
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<Like> likeRowMapper;
 
@@ -29,9 +34,7 @@ public class LikeDbStorage implements IntersectStorage<Like, Long> {
 
     @Override
     public Optional<Like> find(Long user_id, Long film_id) {
-        String selectSqlQuery = "SELECT * FROM " + FILM_LIKES
-                + " WHERE (" + USER_ID + " = ? " + " AND " + FILM_ID + " = ?)";
-        try (Stream<Like> stream = jdbcTemplate.queryForStream(selectSqlQuery, likeRowMapper, user_id, film_id)) {
+        try (Stream<Like> stream = jdbcTemplate.queryForStream(LIKE_SELECT_SQL_QUERY, likeRowMapper, user_id, film_id)) {
             return stream.findAny();
         }
     }
@@ -39,17 +42,11 @@ public class LikeDbStorage implements IntersectStorage<Like, Long> {
     @Override
     public void save(Like like) {
         Objects.requireNonNull(like, "like must not be null");
-        String intoSqlQuery = "MERGE INTO " + FILM_LIKES + " (" + FILM_ID
-                + ", " + USER_ID + ") "
-                + "KEY (" + FILM_ID + ", " + USER_ID + ") VALUES (?, ?)";
-        jdbcTemplate.update(intoSqlQuery, like.getFilmId(), like.getUserId());
+        jdbcTemplate.update(LIKE_INSERT_SQL_QUERY, like.getFilmId(), like.getUserId());
     }
 
     @Override
     public boolean delete(Like like) {
-        Objects.requireNonNull(like, "like must not be null");
-        String deleteSqlQuery = "DELETE FROM " + FILM_LIKES + " WHERE "
-                + FILM_ID + " = ? " + " AND " + USER_ID + " = ?";
-        return jdbcTemplate.update(deleteSqlQuery, like.getFilmId(), like.getUserId()) == 1;
+        return jdbcTemplate.update(LIKE_DELETE_SQL_QUERY, like.getFilmId(), like.getUserId()) == 1;
     }
 }

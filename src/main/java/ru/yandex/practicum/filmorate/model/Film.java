@@ -9,7 +9,6 @@ import ru.yandex.practicum.filmorate.constraint.AfterDate;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
-import java.sql.Date;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.HashMap;
@@ -78,7 +77,7 @@ public class Film extends BaseEntity<Long> {
             put("id", id);
             put("name", name);
             put("description", description);
-            put("release_date", releaseDate == null ? null : Date.valueOf(releaseDate));
+            put("release_date", releaseDate);
             put("duration", duration);
             put("rate", rate);
             put("mpa", mpa.getName());
