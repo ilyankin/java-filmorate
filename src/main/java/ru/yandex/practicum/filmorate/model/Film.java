@@ -34,18 +34,6 @@ public class Film extends BaseEntity<Long> {
     private Set<Genre> genres;
 
     public Film(Long id, String name, String description, LocalDate releaseDate, int duration, int rate,
-                MpaRating mpa, Set<Genre> genres) {
-        super(id);
-        this.name = name;
-        this.description = description;
-        this.releaseDate = releaseDate;
-        this.duration = duration;
-        this.rate = rate;
-        this.mpa = mpa;
-        this.genres = genres;
-    }
-
-    public Film(Long id, String name, String description, LocalDate releaseDate, int duration, int rate,
                 MpaRating mpa) {
         super(id);
         this.name = name;
@@ -55,6 +43,19 @@ public class Film extends BaseEntity<Long> {
         this.rate = rate;
         this.mpa = mpa;
         this.genres = Collections.emptySet();
+    }
+
+    @Override
+    public Map<String, Object> toMap() {
+        return new HashMap<>() {{
+            put("id", id);
+            put("name", name);
+            put("description", description);
+            put("release_date", releaseDate);
+            put("duration", duration);
+            put("rate", rate);
+            put("mpa", mpa.getName());
+        }};
     }
 
     @Override
@@ -69,18 +70,5 @@ public class Film extends BaseEntity<Long> {
                 ", mpa=" + mpa +
                 ", genres=" + genres +
                 '}';
-    }
-
-    @Override
-    public Map<String, Object> toMap() {
-        return new HashMap<>() {{
-            put("id", id);
-            put("name", name);
-            put("description", description);
-            put("release_date", releaseDate);
-            put("duration", duration);
-            put("rate", rate);
-            put("mpa", mpa.getName());
-        }};
     }
 }
