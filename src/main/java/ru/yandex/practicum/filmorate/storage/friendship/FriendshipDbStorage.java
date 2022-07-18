@@ -13,10 +13,6 @@ import java.util.stream.Stream;
 
 @Repository
 public class FriendshipDbStorage implements IntersectStorage<Friendship, Long> {
-    private final static String FRIENDSHIPS = "FRIENDSHIPS";
-    private final static String USER_ID = "user_id";
-    private final static String FRIEND_ID = "friend_id";
-
     private final static String FRIENDSHIP_SELECT_SQL_QUERY =
             "SELECT * FROM FRIENDSHIPS WHERE user_id = ? AND friend_id = ? OR friend_id = ? AND user_id = ?";
     private final static String FRIENDSHIP_INTO_SQL_QUERY =

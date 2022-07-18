@@ -17,14 +17,15 @@ import java.util.Optional;
 public class UserDbStorage implements Storage<User, Long> {
     private final static String USERS = "USERS";
     private final static String USER_ID = "id";
-    private final static String USER_UPDATE_SQL_QUERY = "UPDATE USERS SET email = ?, login = ?, name = ?, birthday = ? WHERE id = ?";
-    private final static String USER_SELECT_FRIENDS_SQL_QUERY = "SELECT * FROM " + USERS + " WHERE id IN ("
-            + "(SELECT user_id FROM FRIENDSHIPS WHERE friend_id = ? AND confirmed IS TRUE)"
+    private final static String USER_UPDATE_SQL_QUERY =
+            "UPDATE USERS SET email = ?, login = ?, name = ?, birthday = ? WHERE id = ?";
+    private final static String USER_SELECT_FRIENDS_SQL_QUERY = "SELECT * FROM USERS WHERE id IN ("
+            + "(SELECT user_id FROM FRIENDSHIPS WHERE friend_id = ? AND confirmed)"
             + " UNION (SELECT friend_id FROM FRIENDSHIPS WHERE user_id = ?))";
-    private final static String USER_SELECT_COMMON_FRIENDS_SQL_QUERY = "SELECT * FROM " + USERS + " WHERE id IN ("
-            + "(SELECT user_id FROM FRIENDSHIPS WHERE friend_id = ? AND confirmed IS TRUE) "
+    private final static String USER_SELECT_COMMON_FRIENDS_SQL_QUERY = "SELECT * FROM USERS WHERE id IN ("
+            + "(SELECT user_id FROM FRIENDSHIPS WHERE friend_id = ? AND confirmed) "
             + "UNION (SELECT friend_id FROM FRIENDSHIPS WHERE user_id = ?)) "
-            + "AND id IN ((SELECT user_id FROM FRIENDSHIPS WHERE friend_id = ? AND confirmed IS TRUE) "
+            + "AND id IN ((SELECT user_id FROM FRIENDSHIPS WHERE friend_id = ? AND confirmed) "
             + "UNION (SELECT friend_id FROM FRIENDSHIPS WHERE user_id = ?))";
 
 
@@ -91,6 +92,7 @@ public class UserDbStorage implements Storage<User, Long> {
     }
 
     public Collection<User> getCommonUserFriends(Long userId, Long otherUserId) {
-        return jdbcTemplate.query(USER_SELECT_COMMON_FRIENDS_SQL_QUERY, userRowMapper, userId, userId, otherUserId, otherUserId);
+        return jdbcTemplate.query(USER_SELECT_COMMON_FRIENDS_SQL_QUERY, userRowMapper,
+                userId, userId, otherUserId, otherUserId);
     }
 }

@@ -52,7 +52,8 @@ public class FilmService {
 
     public Film update(Film film) {
         Objects.requireNonNull(film, "film must not be null");
-        Film updatedFilm = filmStorage.update(film).orElseThrow(() -> new ResourceNotFoundException("film", "id", film.getId()));
+        Film updatedFilm = filmStorage.update(film).orElseThrow(() ->
+                new ResourceNotFoundException("film", "id", film.getId()));
         if (film.getGenres() != null) {
             filmGenreStorage.deleteByFilmId(film.getId());
             saveFilmGenres(film);

@@ -14,9 +14,6 @@ import java.util.stream.Stream;
 
 @Repository
 public class LikeDbStorage implements IntersectStorage<Like, Long> {
-    private final static String FILM_LIKES = "FILM_LIKES";
-    private final static String USER_ID = "user_id";
-    private final static String FILM_ID = "film_id";
     private final static String LIKE_SELECT_SQL_QUERY =
             "SELECT * FROM FILM_LIKES WHERE user_id = ? AND film_id = ?";
     private final static String LIKE_INSERT_SQL_QUERY =
@@ -34,7 +31,8 @@ public class LikeDbStorage implements IntersectStorage<Like, Long> {
 
     @Override
     public Optional<Like> find(Long user_id, Long film_id) {
-        try (Stream<Like> stream = jdbcTemplate.queryForStream(LIKE_SELECT_SQL_QUERY, likeRowMapper, user_id, film_id)) {
+        try (Stream<Like> stream =
+                     jdbcTemplate.queryForStream(LIKE_SELECT_SQL_QUERY, likeRowMapper, user_id, film_id)) {
             return stream.findAny();
         }
     }

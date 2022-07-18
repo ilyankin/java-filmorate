@@ -35,7 +35,8 @@ public class FilmGenreDbStorage implements IntersectStorage<FilmGenre, Long> {
     private final RowMapper<Genre> genreRowMapper;
 
     @Autowired
-    public FilmGenreDbStorage(JdbcTemplate jdbcTemplate, FilmGenreRowMapper filmGenreRowMapper, GenreRowMapper genreRowMapper) {
+    public FilmGenreDbStorage(JdbcTemplate jdbcTemplate, FilmGenreRowMapper filmGenreRowMapper,
+                              GenreRowMapper genreRowMapper) {
         this.jdbcTemplate = jdbcTemplate;
         this.filmGenreRowMapper = filmGenreRowMapper;
         this.genreRowMapper = genreRowMapper;

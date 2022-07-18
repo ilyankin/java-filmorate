@@ -69,7 +69,8 @@ public final class DbUtil {
     public static <EntityType extends BaseEntity<idType>, idType> void checkEntityExists(
             Storage<EntityType, idType> storage, String entityName, String fieldName, idType... userIds) {
         for (idType entityId : userIds) {
-            storage.findById(entityId).orElseThrow(() -> new ResourceNotFoundException(entityName, fieldName, entityId));
+            storage.findById(entityId).orElseThrow(() ->
+                    new ResourceNotFoundException(entityName, fieldName, entityId));
         }
     }
 }

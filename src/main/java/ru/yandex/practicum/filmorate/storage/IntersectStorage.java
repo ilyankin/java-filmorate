@@ -7,6 +7,5 @@ public interface IntersectStorage<EntityType, idType> {
 
     void save(EntityType entity);
 
-
     boolean delete(EntityType entity);
 }

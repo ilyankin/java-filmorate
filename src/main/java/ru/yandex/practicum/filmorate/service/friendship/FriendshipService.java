@@ -20,8 +20,8 @@ public class FriendshipService {
     }
 
     public Friendship find(Long userId, Long friendId) {
-        return friendshipStorage.find(userId, friendId).orElseThrow(() -> new ResourceNotFoundException("friendship",
-                Map.of("userId", userId, "friendId", friendId)));
+        return friendshipStorage.find(userId, friendId).orElseThrow(() ->
+                new ResourceNotFoundException("friendship", Map.of("userId", userId, "friendId", friendId)));
     }
 
     public void save(Friendship friendship) {

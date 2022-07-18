@@ -34,7 +34,8 @@ public class GenreService {
 
     public Genre update(Genre genre) {
         Objects.requireNonNull(genre, "genre must not be null");
-        return genreStorage.update(genre).orElseThrow(() -> new ResourceNotFoundException("genre", "id", genre.getId()));
+        return genreStorage.update(genre).orElseThrow(() ->
+                new ResourceNotFoundException("genre", "id", genre.getId()));
     }
 
     public boolean delete(Integer genreId) {
