@@ -46,7 +46,8 @@ public class ErrorResponse {
     }
 
     private void addValidationError(FieldError fieldError) {
-        this.addValidationError(fieldError.getObjectName(), fieldError.getField(), fieldError.getRejectedValue(), fieldError.getDefaultMessage());
+        this.addValidationError(fieldError.getObjectName(), fieldError.getField(), fieldError.getRejectedValue(),
+                fieldError.getDefaultMessage());
     }
 
     public void addValidationErrors(List<FieldError> fieldErrors) {
